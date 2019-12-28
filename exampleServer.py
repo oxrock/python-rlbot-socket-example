@@ -185,7 +185,6 @@ def packetGenerator():
     }
     return gamePacket
 
-#packet = packetGenerator()
 
 def createHeader(jString):
     length = len(jString.encode('utf-8'))
