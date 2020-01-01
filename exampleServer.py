@@ -1,5 +1,6 @@
 import socket
 import json
+import struct
 
 def packetGenerator():
     gamePacket ={
@@ -188,20 +189,20 @@ def packetGenerator():
 
 def createHeader(jString):
     length = len(jString.encode('utf-8'))
-    header = str(length).encode('utf-8')
-    header+= b' '*(16 - len(header))
+    # header = str(length).encode('utf-8')
+    # header+= b' '*(16 - len(header))
+    header = struct.pack("H",length)
     return header
 
 def sendPacket(jPacket,socket):
     header = createHeader(jPacket)
     packetBytes = header+bytes(jPacket.encode('utf-8'))
-    print(packetBytes)
     socket.sendall(packetBytes)
 
 def recieveController(socket):
     recieved = socket.recv(1024)
-    header = int(recieved[:16].decode())
-    recieved = recieved[16:]
+    header = struct.unpack("H", recieved[:2])[0]
+    recieved = recieved[2:]
 
     while len(recieved) < header:
         recieved += socket.recv(1024)

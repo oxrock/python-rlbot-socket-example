@@ -1,5 +1,6 @@
 import socket
 import json
+import struct
 
 def controllerGenerator():
     controller = {
@@ -18,8 +19,7 @@ def controllerGenerator():
 
 def createHeader(jString):
     length = len(jString.encode('utf-8'))
-    header = str(length).encode('utf-8')
-    header+= b' '*(16 - len(header))
+    header = struct.pack("H",length)
     return header
 
 
@@ -32,8 +32,8 @@ class SocketBot():
 
     def recievePacket(self,):
         recieved = self.socket.recv(1024)
-        header = int(recieved[:16].decode('utf-8'))
-        recieved = recieved[16:]
+        header = struct.unpack("H", recieved[:2])[0]
+        recieved = recieved[2:]
 
         while len(recieved) < header:
             recieved += self.socket.recv(1024)
